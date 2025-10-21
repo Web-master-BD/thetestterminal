@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Gemini - Mainframe</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        /* --- Base & Theming --- */
+        :root {
+            --theme-primary: #00ffff; /* RescueFox Default */
+            --theme-secondary: #00a1a1;
+            --theme-glow: rgba(0, 255, 255, 0.7);
+            --bg-primary: #0a0a14;
+            --bg-secondary: #10121a;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --border-color: rgba(0, 255, 255, 0.2);
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Roboto Mono', monospace;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.5s ease;
+        }
+
+        /* --- Animated Background --- */
+        #background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                linear-gradient(var(--theme-primary), transparent 1px),
+                linear-gradient(90deg, var(--theme-primary), transparent 1px);
+            background-size: 30px 30px;
+            opacity: 0.1;
+            animation: moveGrid 20s linear infinite;
+            transition: background 0.5s ease;
+        }
+
+        @keyframes moveGrid {
+            0% { background-position: 0 0; }
+            100% { background-position: -60px -60px; }
+        }
+
+        /* --- Theme Switching Classes --- */
+        body.theme-appstore {
+            --theme-primary: #d000ff;
+            --theme-secondary: #8e00b3;
+            --theme-glow: rgba(208, 0, 255, 0.7);
+            --border-color: rgba(208, 0, 255, 0.2);
+        }
+        body.theme-nigama {
+            --theme-primary: #FFD700;
+            --theme-secondary: #b39700;
+            --theme-glow: rgba(255, 215, 0, 0.7);
+            --border-color: rgba(255, 215, 0, 0.2);
+        }
+
+        /* --- Main Container & Header --- */
+        .main-container {
+            width: 90%;
+            max-width: 1200px;
+            padding: 2rem;
+            text-align: center;
+            z-index: 1;
+        }
+
+        header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--theme-primary);
+            text-shadow: 0 0 10px var(--theme-glow), 0 0 20px var(--theme-secondary);
+            animation: flicker 3s infinite alternate;
+        }
+
+        header p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-top: -10px;
+            margin-bottom: 50px;
+        }
+
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% {
+                text-shadow:
+                0 0 4px var(--theme-primary),
+                0 0 11px var(--theme-primary),
+                0 0 19px var(--theme-primary),
+                0 0 40px var(--theme-glow),
+                0 0 80px var(--theme-glow),
+                0 0 90px var(--theme-glow);
+            }
+            20%, 24%, 55% { text-shadow: none; }
+        }
+        
+        /* --- Button Navigation --- */
+        .button-nav {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 50px;
+        }
+
+        .sci-fi-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--theme-primary);
+            padding: 15px 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: color 0.4s, border-color 0.4s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .sci-fi-btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--theme-glow), transparent);
+            transition: left 0.5s;
+        }
+
+        .sci-fi-btn:hover:before {
+            left: 100%;
+        }
+
+        .sci-fi-btn:hover {
+            color: #fff;
+            border-color: var(--theme-primary);
+            box-shadow: 0 0 20px var(--theme-glow);
+        }
+
+        .sci-fi-btn.active {
+            background-color: var(--theme-glow);
+            color: var(--bg-primary);
+            box-shadow: 0 0 25px var(--theme-glow);
+        }
+
+        /* --- Content Sections --- */
+        .content-section {
+            display: none;
+            padding: 30px;
+            margin-top: 20px;
+            background: rgba(16, 18, 26, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+            text-align: left;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .section-header h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--theme-primary);
+            text-shadow: 0 0 5px var(--theme-glow);
+            margin: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .download-btn {
+            background: transparent;
+            border: 1px solid var(--theme-secondary);
+            color: var(--theme-secondary);
+            padding: 8px 16px;
+            font-family: 'Roboto Mono', monospace;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .download-btn:hover {
+            background-color: var(--theme-primary);
+            color: var(--bg-primary);
+            box-shadow: 0 0 15px var(--theme-glow);
+            border-color: var(--theme-primary);
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .grid-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 4px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .grid-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 15px var(--theme-glow);
+        }
+
+        .grid-item h3 {
+            color: var(--theme-primary);
+            margin-top: 0;
+            font-size: 1.1rem;
+        }
+        
+        .grid-item p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* --- Specific Theme Styles --- */
+        #rescuefox-content .section-header h2 {
+            animation: glitch 1s linear infinite;
+        }
+        @keyframes glitch{
+            2%,64%{ transform: translate(2px,0) skew(0deg); }
+            4%,60%{ transform: translate(-2px,0) skew(0deg); }
+            62%{ transform: translate(0,0) skew(5deg); }
+        }
+        #nigama-content .grid-item h3 {
+             font-family: serif;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            .button-nav {
+                flex-direction: column;
+                align-items: center;
+            }
+            .sci-fi-btn {
+                width: 80%;
+            }
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body class="theme-rescuefox">
+
+    <div id="background-animation"></div>
+
+    <div class="main-container">
+        <header>
+            <h1>THE TERMINAL</h1>
+            <p>// Select a module to initialize //</p>
+        </header>
+
+        <nav class="button-nav">
+            <button class="sci-fi-btn" data-target="rescuefox-content" data-theme="theme-rescuefox">RescueFox USB</button>
+            <button class="sci-fi-btn" data-target="appstore-content" data-theme="theme-appstore">App Store</button>
+            <button class="sci-fi-btn" data-target="nigama-content" data-theme="theme-nigama">Nigama Kalpataru</button>
+        </nav>
+
+        <main>
+            <section id="rescuefox-content" class="content-section">
+                <div class="section-header">
+                    <h2>Module: RescueFox USB</h2>
+                    <a href="https://tinyurl.com/rescuefoxusb" class="download-btn" >Download Kit</a>
+                </div>
+                <div class="grid-container">
+                    <div class="grid-item"><h3>Ventoy Core</h3><p>Harnessing a modified Ventoy core for seamless ISO booting. Drag, drop, and deploy. No reformatting required. Supports legacy and UEFI systems.</p></div>
+                    <div class="grid-item"><h3>Diagnostics Suite</h3><p>Integrated tools for system diagnostics, including MemTest86+, HD Sentinel, and Clonezilla. Isolate hardware failures with precision.</p></div>
+                    <div class="grid-item"><h3>Portable OS Arsenal</h3><p>Boot into live environments like Kali Linux for security audits, Tails for privacy, or a lightweight Windows PE for emergency data recovery.</p></div>
+                </div>
+            </section>
+
+            <section id="appstore-content" class="content-section">
+                <div class="section-header">
+                    <h2>Module: App Store</h2>
+                    <a href="tinyurl.com/appstore-2k25" class="download-btn" >Download Bundle</a>
+                </div>
+                <div class="grid-container">
+                    <div class="grid-item"><h3>Quantum IDE</h3><p>A next-generation Integrated Development Environment with AI-powered code completion and decentralized version control. Write the future.</p></div>
+                    <div class="grid-item"><h3>Holonet Browser</h3><p>Secure, private, and fast. Access the decentralized web (Web 4.0) with built-in protection against tracking and malware. Your data is your own.</p></div>
+                    <div class="grid-item"><h3>Starlight Mapper</h3><p>Real-time stellar cartography application. Explore known star systems, track celestial bodies, and access exoplanet data from the Galactic Codex.</p></div>
+                    <div class="grid-item"><h3>Neuro-Player</h3><p>An advanced media player that syncs with neural interfaces for an immersive audio-visual experience. Compatible with all known codecs.</p></div>
+                </div>
+            </section>
+
+            <section id="nigama-content" class="content-section">
+                <div class="section-header">
+                    <h2>Module: Nigama Kalpataru</h2>
+                    <a href="https://tinyurl.com/nigamakalpataru" class="download-btn" >Download Archive</a>
+                </div>
+                <div class="grid-container">
+                    <div class="grid-item"><h3>The Vedas (श्रुति)</h3><p>Explore the complete collection of the four Vedas: Rigveda, Yajurveda, Samaveda, and Atharvaveda with advanced search and translation matrix.</p></div>
+                    <div class="grid-item"><h3>The Upanishads (उपनिषद्)</h3><p>A collection of philosophical texts that form the theoretical basis for the Hindu religion. Access commentaries from historical and modern scholars.</p></div>
+                    <div class="grid-item"><h3>The Puranas (पुराण)</h3><p>Delve into the vast literature of Indian epics, myths, and legends. Includes interactive timelines and character relationship mapping.</p></div>
+                    <div class="grid-item"><h3>Bhagavad Gita (भगवद्गीता)</h3><p>An interactive study module with verse-by-verse analysis, cross-references to other scriptures, and guided audio recitations.</p></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const buttons = document.querySelectorAll('.sci-fi-btn');
+            const contentSections = document.querySelectorAll('.content-section');
+            const body = document.body;
+
+            function activateSection(targetId) {
+                const targetButton = document.querySelector(`.sci-fi-btn[data-target="${targetId}"]`);
+                if (!targetButton) return;
+
+                const themeClass = targetButton.dataset.theme;
+
+                buttons.forEach(btn => btn.classList.remove('active'));
+                targetButton.classList.add('active');
+
+                contentSections.forEach(section => {
+                    section.classList.toggle('active', section.id === targetId);
+                });
+
+                body.className = '';
+                body.classList.add(themeClass);
+            }
+
+            buttons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = button.dataset.target;
+                    activateSection(targetId);
+                    history.pushState(null, '', `#${targetId}`);
+                });
+            });
+
+            function handleInitialLoad() {
+                const hash = window.location.hash.substring(1);
+                const validSection = document.getElementById(hash);
+
+                if (hash && validSection) {
+                    activateSection(hash);
+                } else {
+                    const defaultTarget = buttons[0].dataset.target;
+                    activateSection(defaultTarget);
+                }
+            }
+
+            handleInitialLoad();
+        });
+    </script>
+
+</body>
+</html>
